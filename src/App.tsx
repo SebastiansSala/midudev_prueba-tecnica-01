@@ -1,10 +1,9 @@
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import libraryBooks from "./data/books.json"
 import Book from "./components/Book"
 import FilterGenre from "./components/FilterGenre"
 import FilterPages from "./components/FilterPages"
 import { BookType } from "./libs/types"
-import ListOfBooks from "./components/LIstOfBooks"
 import Button from "./components/Button"
 
 function App() {
@@ -28,25 +27,31 @@ function App() {
     )
   })
 
-  const handleAddToList = (title: string) => {
-    const bookToAdd = books.find(({ book }) => book.title === title)
-    if (!bookToAdd) return
+  const handleAddToList = useCallback(
+    (title: string) => {
+      const bookToAdd = books.find(({ book }) => book.title === title)
+      if (!bookToAdd) return
 
-    const findBookInList = list.find((book) => book.title === title)
+      const findBookInList = list.find((book) => book.title === title)
 
-    if (!findBookInList) {
-      setList((list) => [...list, bookToAdd.book])
-    }
-  }
+      if (!findBookInList) {
+        setList((list) => [...list, bookToAdd.book])
+      }
+    },
+    [books, list]
+  )
 
-  const handleRemoveFromList = (title: string) => {
-    const bookToAdd = list.find((book) => book.title === title)
-    if (!bookToAdd) return
+  const handleRemoveFromList = useCallback(
+    (title: string) => {
+      const bookToAdd = list.find((book) => book.title === title)
+      if (!bookToAdd) return
 
-    const filterList = list.filter((book) => book.title !== title)
+      const filterList = list.filter((book) => book.title !== title)
 
-    setList(filterList)
-  }
+      setList(filterList)
+    },
+    [list]
+  )
 
   const handleGenre = (genre: string) => {
     setCurrentGenre(genre)
@@ -75,7 +80,7 @@ function App() {
             handleGenre={handleGenre}
           />
         </div>
-        <ul className='flex flex-wrap gap-8'>
+        <ul className='flex flex-wrap gap-8 justify-center'>
           {filteredByPages.map(({ book }) => {
             const { title, cover } = book
             return (
@@ -88,7 +93,18 @@ function App() {
           })}
         </ul>
       </section>
-      <ListOfBooks books={list} onClick={handleRemoveFromList} />
+      <section className='flex-1 px-4 border'>
+        <h2 className='text-5xl py-10'>Lecture List</h2>
+        <ul className='flex flex-wrap justify-center gap-10'>
+          {list.map(({ title, cover }) => (
+            <Book title={title} cover={cover} key={title}>
+              <Button onClick={() => handleRemoveFromList(title)}>
+                Remove from list
+              </Button>
+            </Book>
+          ))}
+        </ul>
+      </section>
     </main>
   )
 }

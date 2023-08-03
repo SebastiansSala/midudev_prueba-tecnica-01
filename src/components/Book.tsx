@@ -11,7 +11,7 @@ const Book = ({ children, title, cover }: BookProps) => {
   return (
     <li
       key={title}
-      className='w-56 h-80 relative'
+      className='relative w-40'
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
